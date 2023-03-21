@@ -116,7 +116,7 @@ fi\
 %ghc_prefix %{?ghc_name}%{!?ghc_name:ghc}
 
 # top ghcdocdir
-%_ghc_doc_dir %{_docdir}/%{ghc_prefix}
+%_ghc_doc_dir %{_docdir}/%{ghc_prefix}-%{ghc_version}
 
 # root dir for ghc docs (used by ghc.spec)
 %ghc_html_dir %{_ghc_doc_dir}/html
@@ -173,6 +173,7 @@ fi\
 for i in %{buildroot}%{?_ghcdynlibdir}%{!?_ghcdynlibdir:%{ghcliblib}${subsubdir}%{?with_hadrian:/%{ghcplatform}}%{!?with_hadrian:%{?base_ver:/%{pkgnamever}}}}/libHS%{pkgnamever}-*ghc%{ghc_version}.so; do\
 if [ -x "$i" ]; then\
 echo $i >> %{basepkg}.files\
+echo "%%dir %{ghclibdir}/lib" >> %{basepkg}.files\
 else\
 echo $i: not found\
 %if 0%{!-m:1}\
@@ -183,6 +184,8 @@ done\
 pkgdir="%{ghcliblib}${subsubdir}%{?with_hadrian:/%{ghcplatform}}/%{pkgnamever}"\
 if [ -d "%{buildroot}${pkgdir}" ]; then\
 find %{buildroot}${pkgdir} -type d -fprintf %{basepkg}-devel.files '%%%%dir %p\\n' -o \\( -name '*.p_hi' -o -name 'libHS*_p.a' \\) -fprint %{basepkg}-prof.files -o -fprint %{basepkg}-devel.files\
+echo "%%dir %{ghclibdir}/lib" >> %{basepkg}-devel.files\
+echo "%%dir %{ghclibdir}/lib" >> %{basepkg}-prof.files\
 else\
 rm -f %{basepkg}-devel.files %{basepkg}-prof.files\
 touch %{basepkg}-devel.files %{basepkg}-prof.files\
